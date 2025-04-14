@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Pong</title>
+  <style>
+    :root {
+      --primary: #00f7ff;
+      --secondary: #ff00f7;
+      --bg-dark: #0a0a1a;
+      --bg-light: #1a1a2a;
+      --text: #ffffff;
+      --text-dim: #aaaaaa;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    /* Header */
+    header {
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      position: relative;
+    }
+    
+    header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+    }
+    
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+    }
+    
+    /* Main Content */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    /* Menu */
+    #menu {
+      max-width: 800px;
+      width: 100%;
+      background: var(--bg-light);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      margin: 20px 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    #menu h2 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+    }
+    
+    .difficulty-options {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .difficulty-option {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      background: var(--bg-dark);
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      overflow: hidden;
+    }
+    
+    .difficulty-option::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      z-index: -1;
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .difficulty-option:hover::before {
+      opacity: 1;
+    }
+    
+    .difficulty-option.selected {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 25px rgba(0, 247, 255, 0.3);
+      border-color: var(--primary);
+    }
+    
+    .difficulty-option.selected::before {
+      opacity: 1;
+    }
+    
+    .difficulty-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    
+    .difficulty-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .difficulty-desc {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-top: 5px;
+    }
+    
+    .btn {
+      padding: 15px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: var(--bg-dark);
+      box-shadow: 0 5px 15px rgba(0, 247, 255, 0.3);
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 247, 255, 0.4);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    /* Game UI */
+    #game-ui {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .game-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px 25px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .score-display {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    
+    .score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .score-label {
+      font-size: 1rem;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+    
+    .score-value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .difficulty-badge {
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      background: rgba(0, 247, 255, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    #game-canvas {
+      background: var(--bg-light);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .game-controls {
+      margin-top: 30px;
+      display: flex;
+      gap: 20px;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--text-dim);
+      box-shadow: none;
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: none;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .difficulty-options {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .difficulty-option {
+        width: 100%;
+        max-width: 250px;
+        height: 120px;
+      }
+      
+      #game-canvas {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Neon Pong</h1>
+    </header>
+    
+    <main>
+      <!-- Menu Screen -->
+      <div id="menu">
+        <h2>Select Difficulty</h2>
+        
+        <div class="difficulty-options">
+          <div class="difficulty-option pulse" data-level="easy">
+            <div class="difficulty-icon">😊</div>
+            <div class="difficulty-label">Easy</div>
+            <div class="difficulty-desc">Relaxed gameplay</div>
+          </div>
+          
+          <div class="difficulty-option selected" data-level="medium">
+            <div class="difficulty-icon">😎</div>
+            <div class="difficulty-label">Medium</div>
+            <div class="difficulty-desc">Balanced challenge</div>
+          </div>
+          
+          <div class="difficulty-option" data-level="hard">
+            <div class="difficulty-icon">🔥</div>
+            <div class="difficulty-label">Hard</div>
+            <div class="difficulty-desc">Ultimate test</div>
+          </div>
+        </div>
+        
+        <button id="start-btn" class="btn">Start Game</button>
+      </div>
+      
+      <!-- Game Screen -->
+      <div id="game-ui">
+        <div class="game-header">
+          <div class="score-display">
+            <div class="score">
+              <div class="score-label">Player</div>
+              <div id="player-score" class="score-value">0</div>
+            </div>
+            
+            <div style="font-size: 1.5rem;">-</div>
+            
+            <div class="score">
+              <div class="score-label">Computer</div>
+              <div id="computer-score" class="score-value">0</div>
+            </div>
+          </div>
+          
+          <div id="difficulty-badge" class="difficulty-badge">Medium</div>
+        </div>
+        
+        <canvas id="game-canvas" width="800" height="500"></canvas>
+        
+        <div class="game-controls">
+          <button id="back-btn" class="btn btn-secondary">Menu</button>
+          <button id="restart-btn" class="btn">Restart</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Game elements
+    const canvas = document.getElementById("game-canvas");
+    const ctx = canvas.getContext("2d");
+    const menu = document.getElementById("menu");
+    const gameUI = document.getElementById("game-ui");
+    const playerScoreDisplay = document.getElementById("player-score");
+    const computerScoreDisplay = document.getElementById("computer-score");
+    const difficultyBadge = document.getElementById("difficulty-badge");
+    
+    // Game state
+    let gameRunning = false;
+    let gameInterval;
+    let selectedDifficulty = "medium";
+    let lastTimestamp = 0;
+    const frameRate = 60;
+    const frameInterval = 1000 / frameRate;
+
+    // Enhanced Difficulty settings
+    const difficultySettings = {
+      easy: {
+        name: "Easy",
+        aiSpeed: 0.06,
+        ballSpeed: 13,
+        aiError: 0.4,       // Higher error rate
+        aiReactionDelay: 0.4, // Slower reaction
+        aiPrediction: 0.3,   // Less accurate prediction
+        paddleSize: 120,
+        ballSize: 12,
+        primaryColor: "#00ffaa",
+        secondaryColor: "#00aaff"
+      },
+      medium: {
+        name: "Medium",
+        aiSpeed: 0.12,
+        ballSpeed: 15,
+        aiError: 0.25,
+        aiReactionDelay: 0.2,
+        aiPrediction: 0.6,
+        paddleSize: 100,
+        ballSize: 10,
+        primaryColor: "#00f7ff",
+        secondaryColor: "#ff00f7"
+      },
+      hard: {
+        name: "Hard",
+        aiSpeed: 0.18,
+        ballSpeed: 20,
+        aiError: 0.3,
+        aiReactionDelay: 0.01,
+        aiPrediction: 0.5,   // Very accurate prediction
+        paddleSize: 80,
+        ballSize: 8,
+        primaryColor: "#ff0000",
+        secondaryColor: "#ffcc00"
+      }
+    };
+
+    // Game objects
+    const net = {
+      x: canvas.width / 2 - 1,
+      y: 0,
+      width: 2,
+      height: 10,
+      gap: 15
+    };
+
+    const user = {
+      x: 20,
+      y: canvas.height / 2 - 50,
+      width: 12,
+      height: 100,
+      score: 0,
+      color: "#00f7ff"
+    };
+
+    const com = {
+      x: canvas.width - 32,
+      y: canvas.height / 2 - 50,
+      width: 12,
+      height: 100,
+      score: 0,
+      color: "#ff00f7",
+      targetY: canvas.height / 2 - 50, // Track target position
+      lastBallX: 0, // Track ball's last x position
+      lastBallY: 0  // Track ball's last y position
+    };
+
+    const ball = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speed: 5,
+      velocityX: 5,
+      velocityY: 5,
+      color: "#ffffff",
+      trail: []
+    };
+
+    // Drawing functions
+    function drawRect(x, y, w, h, color, shadow = true) {
+      ctx.fillStyle = color;
+      if (shadow) {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 15;
+      }
+      ctx.fillRect(x, y, w, h);
+      ctx.shadowBlur = 0;
+    }
+
+    function drawCircle(x, y, r, color, shadow = true) {
+      ctx.fillStyle = color;
+      if (shadow) {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 15;
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    function drawNet() {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+      for (let i = 0; i <= canvas.height; i += net.gap) {
+        ctx.fillRect(net.x, net.y + i, net.width, net.height);
+      }
+    }
+
+    function drawBallTrail() {
+      if (ball.trail.length < 2) return;
+      
+      ctx.strokeStyle = ball.color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.globalAlpha = 0.3;
+      
+      ctx.beginPath();
+      ctx.moveTo(ball.trail[0].x, ball.trail[0].y);
+      
+      for (let i = 1; i < ball.trail.length; i++) {
+        ctx.lineTo(ball.trail[i].x, ball.trail[i].y);
+      }
+      
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    // Game logic
+    function collision(b, p) {
+      b.top = b.y - b.radius;
+      b.bottom = b.y + b.radius;
+      b.left = b.x - b.radius;
+      b.right = b.x + b.radius;
+
+      p.top = p.y;
+      p.bottom = p.y + p.height;
+      p.left = p.x;
+      p.right = p.x + p.width;
+
+      return (
+        b.right > p.left && b.top < p.bottom && b.left < p.right && b.bottom > p.top
+      );
+    }
+
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.trail = [];
+      
+      // Random direction but towards the loser
+      let direction = (ball.velocityX > 0) ? -1 : 1;
+      const settings = difficultySettings[selectedDifficulty];
+      ball.velocityX = direction * settings.ballSpeed;
+      ball.velocityY = (Math.random() * 2 - 1) * settings.ballSpeed;
+      ball.speed = settings.ballSpeed;
+      ball.radius = settings.ballSize;
+    }
+
+    // Improved AI that's beatable but still challenging
+    function updateComputerAI() {
+      const settings = difficultySettings[selectedDifficulty];
+      
+      // Calculate ball direction and speed
+      const ballSpeedX = ball.x - com.lastBallX;
+      const ballSpeedY = ball.y - com.lastBallY;
+      com.lastBallX = ball.x;
+      com.lastBallY = ball.y;
+      
+      // Only react when ball is coming towards computer
+      if (ball.velocityX > 0) {
+        // Predict where the ball will be when it reaches the paddle
+        const timeToReach = (canvas.width - ball.x - ball.radius - com.width) / ball.velocityX;
+        let predictedY = ball.y + ball.velocityY * timeToReach;
+        
+        // Add some randomness to prediction based on difficulty
+        predictedY += (Math.random() * 100 - 50) * (1 - settings.aiPrediction);
+        
+        // Keep prediction within canvas bounds
+        predictedY = Math.max(ball.radius, Math.min(canvas.height - ball.radius, predictedY));
+        
+        // Set target to center of paddle
+        com.targetY = predictedY - com.height / 2;
+      }
+      
+      // Add some random error based on difficulty
+      if (Math.random() < settings.aiError) {
+        com.targetY += (Math.random() * 100 - 50);
+      }
+      
+      // Smooth movement towards target
+      com.y += (com.targetY - com.y) * settings.aiSpeed;
+    }
+
+    function update(timestamp) {
+      if (!gameRunning) return;
+      
+      // Throttle frame rate
+      if (!lastTimestamp || timestamp - lastTimestamp >= frameInterval) {
+        lastTimestamp = timestamp;
+        
+        // Move ball
+        ball.x += ball.velocityX;
+        ball.y += ball.velocityY;
+        
+        // Add current position to trail (limit length)
+        ball.trail.push({x: ball.x, y: ball.y});
+        if (ball.trail.length > 10) ball.trail.shift();
+
+        // Update computer AI
+        updateComputerAI();
+
+        // Ball collision with top/bottom
+        if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+          ball.velocityY = -ball.velocityY;
+          // Add some randomness to bounce
+          ball.velocityY += (Math.random() * 0.5 - 0.25);
+        }
+
+        // Check collision with paddles
+        let player = (ball.x < canvas.width / 2) ? user : com;
+
+        if (collision(ball, player)) {
+          // Calculate bounce angle based on where ball hits paddle
+          let collidePoint = (ball.y - (player.y + player.height / 2)) / (player.height / 2);
+          let angleRad = (Math.PI / 4) * collidePoint;
+          
+          // Flip direction and add speed
+          let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+          ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+          ball.velocityY = ball.speed * Math.sin(angleRad);
+          
+          // Increase speed slightly
+          ball.speed += 0.2;
+          
+          // Change ball color temporarily
+          ball.color = player.color;
+          setTimeout(() => {
+            ball.color = "#ffffff";
+          }, 100);
+        }
+
+        // Score update
+        if (ball.x - ball.radius < 0) {
+          com.score++;
+          computerScoreDisplay.textContent = com.score;
+          resetBall();
+        } else if (ball.x + ball.radius > canvas.width) {
+          user.score++;
+          playerScoreDisplay.textContent = user.score;
+          resetBall();
+        }
+        
+        // Keep paddles in bounds
+        if (user.y < 0) user.y = 0;
+        if (user.y + user.height > canvas.height) user.y = canvas.height - user.height;
+        if (com.y < 0) com.y = 0;
+        if (com.y + com.height > canvas.height) com.y = canvas.height - com.height;
+      }
+      
+      requestAnimationFrame(update);
+    }
+
+    function render() {
+      // Clear canvas with semi-transparent black for motion blur effect
+      ctx.fillStyle = "rgba(10, 10, 26, 0.2)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw game elements with modern effects
+      drawNet();
+      drawBallTrail();
+      drawRect(user.x, user.y, user.width, user.height, user.color);
+      drawRect(com.x, com.y, com.width, com.height, com.color);
+      drawCircle(ball.x, ball.y, ball.radius, ball.color);
+      
+      // Draw center circle
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function gameLoop(timestamp) {
+      update(timestamp);
+      render();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Game control functions
+    function startGame() {
+      // Set up game based on selected difficulty
+      const settings = difficultySettings[selectedDifficulty];
+      
+      // Adjust game elements
+      user.height = settings.paddleSize;
+      com.height = settings.paddleSize;
+      user.color = settings.primaryColor;
+      com.color = settings.secondaryColor;
+      ball.radius = settings.ballSize;
+      
+      // Reset scores
+      user.score = 0;
+      com.score = 0;
+      playerScoreDisplay.textContent = "0";
+      computerScoreDisplay.textContent = "0";
+      
+      // Set ball speed
+      ball.speed = settings.ballSpeed;
+      resetBall();
+      
+      // Initialize computer tracking
+      com.lastBallX = ball.x;
+      com.lastBallY = ball.y;
+      com.targetY = com.y;
+      
+      // Update UI
+      difficultyBadge.textContent = settings.name;
+      menu.style.display = "none";
+      gameUI.style.display = "flex";
+      
+      // Start game loop
+      gameRunning = true;
+      lastTimestamp = 0;
+      requestAnimationFrame(gameLoop);
+    }
+
+    function returnToMenu() {
+      gameRunning = false;
+      menu.style.display = "block";
+      gameUI.style.display = "none";
+    }
+
+    function restartGame() {
+      returnToMenu();
+      setTimeout(startGame, 100);
+    }
+
+    // Event listeners
+    document.querySelectorAll(".difficulty-option").forEach(option => {
+      option.addEventListener("click", function() {
+        // Remove selected class from all options
+        document.querySelectorAll(".difficulty-option").forEach(opt => {
+          opt.classList.remove("selected", "pulse");
+        });
+        
+        // Add selected class to clicked option
+        this.classList.add("selected", "pulse");
+        selectedDifficulty = this.dataset.level;
+      });
+    });
+
+    document.getElementById("start-btn").addEventListener("click", startGame);
+    document.getElementById("back-btn").addEventListener("click", returnToMenu);
+    document.getElementById("restart-btn").addEventListener("click", restartGame);
+
+    // Control user paddle
+    canvas.addEventListener("mousemove", evt => {
+      if (!gameRunning) return;
+      let rect = canvas.getBoundingClientRect();
+      user.y = evt.clientY - rect.top - user.height / 2;
+    });
+
+    // Initialize by selecting medium difficulty
+    document.querySelector('.difficulty-option[data-level="medium"]').classList.add("selected", "pulse");
+    
+  </script>
+</body>
+</html> 

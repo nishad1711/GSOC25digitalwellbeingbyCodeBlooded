@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media Platform</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Global Colors */
+      :root {
+        --bg-light: #ffffff;
+        --bg-dark: #222222;
+        --text-light: #ffffff;
+        --text-dark: #333333;
+        --primary-cyan: #00bcd4;
+        --accent-blue: #80d8ff;
+        --beige: #f5f5dc;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+        --danger: #ff5252;
+        --warning: #ffc107;
+      }
+
+      /* Reset for dark mode */
+      body.light-mode {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+      }
+
+      body.dark-mode {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+      }
+
+      body.dark-mode .container,
+      body.dark-mode .post {
+        background-color: #333333;
+      }
+
+      body.dark-mode .post {
+        border-color: var(--primary-cyan);
+      }
+
+      /* Styling */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        transition: var(--transition);
+        line-height: 1.6;
+      }
+
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-cyan),
+          var(--accent-blue)
+        );
+        color: var(--text-light);
+        text-align: center;
+        padding: 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      nav {
+        display: flex;
+        justify-content: center;
+        background-color: var(--accent-blue);
+        padding: 15px;
+        border-bottom: 4px solid var(--beige);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      nav a {
+        margin: 0 20px;
+        text-decoration: none;
+        color: var(--text-dark);
+        font-weight: bold;
+        padding: 8px 15px;
+        border-radius: 20px;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+      }
+
+      nav a i {
+        margin-right: 8px;
+      }
+
+      nav a:hover {
+        background-color: var(--primary-cyan);
+        color: var(--text-light);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        margin: 25px auto;
+        padding: 20px;
+        background-color: var(--bg-light);
+        border: 2px solid var(--primary-cyan);
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+      }
+
+      .post {
+        margin: 20px 0;
+        padding: 15px;
+        border: 2px solid var(--accent-blue);
+        border-radius: 12px;
+        background-color: var(--beige);
+        transition: var(--transition);
+      }
+
+      .post:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .post img {
+        max-width: 100%;
+        border-radius: 10px;
+        border: 2px solid var(--primary-cyan);
+        margin-bottom: 10px;
+        transition: var(--transition);
+        height: auto;
+        display: block;
+      }
+
+      .post img:hover {
+        transform: scale(1.02);
+      }
+
+      .post-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .post-actions button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: var(--text-dark);
+        transition: var(--transition);
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .post-actions button:hover {
+        background-color: rgba(0, 188, 212, 0.1);
+        color: var(--primary-cyan);
+      }
+
+      .settings {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+        margin: 0 15px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 34px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--primary-cyan);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+
+      .toggle-icon {
+        font-size: 20px;
+      }
+
+      .profile-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--primary-cyan);
+        margin-bottom: 15px;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-cyan);
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: var(--text-dark);
+      }
+
+      body.dark-mode .stat-label {
+        color: var(--text-light);
+      }
+
+      /* Toxic comment feedback styling */
+      .toxic-warning {
+        color: var(--danger);
+        background-color: rgba(255, 82, 82, 0.1);
+        border: 1px solid var(--danger);
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        display: none;
+      }
+
+      .comment-input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: var(--transition);
+      }
+
+      .comment-input.toxic {
+        border-color: var(--danger);
+        background-color: rgba(255, 82, 82, 0.05);
+      }
+
+      .comments-list li {
+        background-color: rgba(255, 255, 255, 0.6);
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .user-badge {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: var(--primary-cyan);
+        color: white;
+        text-align: center;
+        line-height: 32px;
+        margin-right: 8px;
+        font-weight: bold;
+      }
+
+      .shield-icon {
+        color: var(--primary-cyan);
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .community-guidelines {
+        text-align: left;
+        margin: 0 auto;
+        max-width: 500px;
+        background-color: rgba(0, 188, 212, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid var(--primary-cyan);
+      }
+
+      @media (max-width: 600px) {
+        nav a {
+          margin: 0 10px;
+          padding: 5px 10px;
+          font-size: 14px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body class="light-mode">
+    <header><i class="fas fa-users"></i> SocialConnect</header>
+
+    <nav>
+      <a href="#home" onclick="showSection('home')"
+        ><i class="fas fa-home"></i> Home</a
+      >
+      <a href="#profile" onclick="showSection('profile')"
+        ><i class="fas fa-user"></i> Profile</a
+      >
+      <a href="#settings" onclick="showSection('settings')"
+        ><i class="fas fa-cog"></i> Settings</a
+      >
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="container">
+      <h2><i class="fas fa-newspaper"></i> Feed</h2>
+      <div id="postsContainer">
+        <div class="post">
+          <img
+            src="https://via.placeholder.com/600x400?text=Mountain+View"
+            alt="Mountain Landscape"
+          />
+          <p>
+            <strong>Alex Johnson</strong>: Just hiked to the top of this
+            beautiful mountain! The view was absolutely breathtaking. 🏔️
+            #adventure #nature
+          </p>
+          <div class="post-actions">
+            <button><i class="far fa-heart"></i> Like</button>
+            <button><i class="far fa-comment"></i> Comment</button>
+            <button><i class="fas fa-share"></i> Share</button>
+            <div class="comment-box" style="display: none; margin-top: 10px">
+              <form onsubmit="addComment(event, this.closest('.post'))">
+                <input
+                  type="text"
+                  class="comment-input"
+                  placeholder="Write a comment..."
+                />
+                <div class="toxic-warning">
+                  <i class="fas fa-exclamation-triangle"></i> Your comment may
+                  contain inappropriate content. Please revise it.
+                </div>
+              </form>
+              <ul
+                class="comments-list"
+                style="margin-top: 10px; list-style: none; padding-left: 0"
+              ></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="post">
+          <img
+            src="https://via.placeholder.com/600x400?text=Healthy+Food"
+            alt="Delicious Food"
+          />
+          <p>
+            <strong>Maria Garcia</strong>: Made this healthy bowl for lunch
+            today! Recipe in comments. 🥗 #healthy #foodie
+          </p>
+          <div class="post-actions">
+            <button><i class="far fa-heart"></i> Like</button>
+            <button><i class="far fa-comment"></i> Comment</button>
+            <button><i class="fas fa-share"></i> Share</button>
+            <div class="comment-box" style="display: none; margin-top: 10px">
+              <form onsubmit="addComment(event, this.closest('.post'))">
+                <input
+                  type="text"
+                  class="comment-input"
+                  placeholder="Write a comment..."
+                />
+                <div class="toxic-warning">
+                  <i class="fas fa-exclamation-triangle"></i> Your comment may
+                  contain inappropriate content. Please revise it.
+                </div>
+              </form>
+              <ul
+                class="comments-list"
+                style="margin-top: 10px; list-style: none; padding-left: 0"
+              ></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="post">
+          <img
+            src="https://via.placeholder.com/600x400?text=City+Lights"
+            alt="City at Night"
+          />
+          <p>
+            <strong>Jamie Smith</strong>: The city lights never fail to amaze
+            me. 🌃 #urban #photography
+          </p>
+          <div class="post-actions">
+            <button><i class="far fa-heart"></i> Like</button>
+            <button><i class="far fa-comment"></i> Comment</button>
+            <button><i class="fas fa-share"></i> Share</button>
+            <div class="comment-box" style="display: none; margin-top: 10px">
+              <form onsubmit="addComment(event, this.closest('.post'))">
+                <input
+                  type="text"
+                  class="comment-input"
+                  placeholder="Write a comment..."
+                />
+                <div class="toxic-warning">
+                  <i class="fas fa-exclamation-triangle"></i> Your comment may
+                  contain inappropriate content. Please revise it.
+                </div>
+              </form>
+              <ul
+                class="comments-list"
+                style="margin-top: 10px; list-style: none; padding-left: 0"
+              ></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="container" style="display: none">
+      <div class="profile-header">
+        <img
+          src="https://via.placeholder.com/120x120?text=SW"
+          alt="Profile Picture"
+          class="profile-pic"
+        />
+        <h2>Sarah Williams</h2>
+        <p><i class="fas fa-map-marker-alt"></i> San Francisco, CA</p>
+        <p>Photographer | Travel Enthusiast | Coffee Lover</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number">247</div>
+          <div class="stat-label">Posts</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">1.2K</div>
+          <div class="stat-label">Followers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">583</div>
+          <div class="stat-label">Following</div>
+        </div>
+      </div>
+
+      <h3><i class="fas fa-images"></i> Recent Posts</h3>
+      <div class="post">
+        <img
+          src="https://via.placeholder.com/600x400?text=Beach+Sunset"
+          alt="Beach Sunset"
+        />
+        <p>Sunset at Malibu Beach last weekend 🌅 #sunset #beach #california</p>
+        <div class="post-actions">
+          <button><i class="far fa-heart"></i> 124</button>
+          <button><i class="far fa-comment"></i> 23</button>
+        </div>
+      </div>
+
+      <div class="post">
+        <img
+          src="https://via.placeholder.com/600x400?text=Coffee+Shop"
+          alt="Coffee Shop"
+        />
+        <p>My favorite spot for weekend coffee ☕ #coffee #weekendvibes</p>
+        <div class="post-actions">
+          <button><i class="far fa-heart"></i> 89</button>
+          <button><i class="far fa-comment"></i> 12</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings" class="container" style="display: none">
+      <h2><i class="fas fa-cog"></i> Settings</h2>
+      <div class="settings">
+        <h3>Theme Preferences</h3>
+        <div class="toggle-container">
+          <span class="toggle-icon"><i class="fas fa-sun"></i></span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="themeToggle" onclick="toggleTheme()" />
+            <span class="slider"></span>
+          </label>
+          <span class="toggle-icon"><i class="fas fa-moon"></i></span>
+        </div>
+        <p>Switch between light and dark mode</p>
+
+        <h3>Community Guidelines</h3>
+        <div class="text-center" style="margin-bottom: 15px">
+          <i class="fas fa-shield-alt shield-icon"></i>
+        </div>
+        <div class="community-guidelines">
+          <p>
+            <strong>Our community values respectful communication.</strong>
+            Comments are automatically screened for:
+          </p>
+          <ul>
+            <li>Offensive language</li>
+            <li>Personal attacks</li>
+            <li>Hate speech</li>
+            <li>Bullying content</li>
+            <li>Threats or harassment</li>
+          </ul>
+          <p>
+            If your comment is flagged, you'll have the opportunity to revise it
+            before posting.
+          </p>
+        </div>
+
+        <h3>Account Settings</h3>
+        <button class="settings-button">
+          <i class="fas fa-user-edit"></i> Edit Profile
+        </button>
+        <button class="settings-button">
+          <i class="fas fa-bell"></i> Notification Settings
+        </button>
+        <button class="settings-button">
+          <i class="fas fa-lock"></i> Privacy Settings
+        </button>
+
+        <h3>Content Filtering</h3>
+        <div class="toggle-container">
+          <span
+            ><i class="fas fa-filter" style="margin-right: 8px"></i>Toxic
+            Comment Filter</span
+          >
+          <label class="toggle-switch">
+            <input
+              type="checkbox"
+              id="toxicFilterToggle"
+              checked
+              onclick="toggleToxicFilter()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p>Enable or disable toxic comment filtering</p>
+      </div>
+    </section>
+
+    <script>
+      // JavaScript for Navigation
+      function showSection(sectionId) {
+        document.querySelectorAll(".container").forEach((section) => {
+          section.style.display = "none";
+        });
+        document.getElementById(sectionId).style.display = "block";
+
+        // Update active nav link
+        document.querySelectorAll("nav a").forEach((link) => {
+          link.style.backgroundColor = "transparent";
+          link.style.color = "";
+        });
+
+        const activeLink = document.querySelector(
+          `nav a[href="#${sectionId}"]`
+        );
+        if (activeLink) {
+          activeLink.style.backgroundColor = "var(--primary-cyan)";
+          activeLink.style.color = "var(--text-light)";
+        }
+      }
+
+      // JavaScript for Theme Toggle
+      function toggleTheme() {
+        const body = document.body;
+        const themeToggle = document.getElementById("themeToggle");
+
+        if (body.classList.contains("light-mode")) {
+          body.classList.remove("light-mode");
+          body.classList.add("dark-mode");
+          themeToggle.checked = true;
+          localStorage.setItem("theme", "dark");
+        } else {
+          body.classList.remove("dark-mode");
+          body.classList.add("light-mode");
+          themeToggle.checked = false;
+          localStorage.setItem("theme", "light");
+        }
+      }
+
+      // Toggle toxic comment filter
+      let toxicFilterEnabled = true;
+
+      function toggleToxicFilter() {
+        toxicFilterEnabled =
+          document.getElementById("toxicFilterToggle").checked;
+        localStorage.setItem("toxicFilter", toxicFilterEnabled);
+      }
+
+      // Check for saved preferences
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          document.body.classList.remove("light-mode");
+          document.body.classList.add("dark-mode");
+          document.getElementById("themeToggle").checked = true;
+        }
+
+        // Load toxic filter preference
+        const savedToxicFilter = localStorage.getItem("toxicFilter");
+        if (savedToxicFilter !== null) {
+          toxicFilterEnabled = savedToxicFilter === "true";
+          document.getElementById("toxicFilterToggle").checked =
+            toxicFilterEnabled;
+        }
+
+        // Set home as default active section
+        showSection("home");
+
+        // Add some sample post images
+        setupSampleImages();
+      });
+
+      // Setup sample post images
+      function setupSampleImages() {
+        // Home feed post images
+        const postImages = document.querySelectorAll("#home .post img");
+        if (postImages[0])
+          postImages[0].src =
+            "https://media.istockphoto.com/id/1453838542/photo/last-light-on-mount-sneffels.jpg?s=612x612&w=0&k=20&c=IBOZYpAjhV5hFEL8yKYmY2ZCyCaGEOrXR5VZI13NMRI=";
+        if (postImages[1])
+          postImages[1].src =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSudTsDqMa_OimGOwDvB5veN7NQ3lyWuhGSVw&s";
+        if (postImages[2])
+          postImages[2].src =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQiYb7iXo5virXnd1C7AeuMHBdl-oQc0y1rw&s";
+
+        // Profile post images
+        const profileImages = document.querySelectorAll("#profile .post img");
+        if (profileImages[0])
+          profileImages[0].src =
+            "https://media.istockphoto.com/id/474185479/photo/barbados.jpg?s=612x612&w=0&k=20&c=CoMAIsVOAPd6IzyrigoQdTn6POtp-OSnMv0cS9AzBzc=";
+        if (profileImages[1])
+          profileImages[1].src =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQramD_ZZwvTmvbmj6oiztaFOzYrwHlxrU9cg&s";
+
+        // Profile picture
+        const profilePic = document.querySelector(".profile-pic");
+        if (profilePic)
+          profilePic.src = "https://via.placeholder.com/120x120?text=SW";
+      }
+
+      // Settings buttons styling
+      const settingsButtons = document.querySelectorAll(".settings-button");
+      settingsButtons.forEach((button) => {
+        button.style.backgroundColor = "var(--accent-blue)";
+        button.style.color = "var(--text-dark)";
+        button.style.border = "none";
+        button.style.borderRadius = "5px";
+        button.style.padding = "10px 20px";
+        button.style.fontSize = "14px";
+        button.style.cursor = "pointer";
+        button.style.margin = "5px";
+        button.style.transition = "var(--transition)";
+
+        button.addEventListener("mouseover", () => {
+          button.style.backgroundColor = "var(--primary-cyan)";
+          button.style.color = "var(--text-light)";
+          button.style.transform = "translateY(-2px)";
+        });
+
+        button.addEventListener("mouseout", () => {
+          button.style.backgroundColor = "var(--accent-blue)";
+          button.style.color = "var(--text-dark)";
+          button.style.transform = "translateY(0)";
+        });
+      });
+
+      // Like button functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".post").forEach((post) => {
+          const likeBtn = post.querySelector(
+            ".post-actions button:nth-child(1)"
+          );
+          if (likeBtn) {
+            likeBtn.addEventListener("click", () => {
+              const heartIcon = likeBtn.querySelector("i");
+              heartIcon.classList.toggle("fas");
+              heartIcon.classList.toggle("far");
+              if (heartIcon.classList.contains("fas")) {
+                likeBtn.innerHTML = '<i class="fas fa-heart"></i> Liked';
+              } else {
+                likeBtn.innerHTML = '<i class="far fa-heart"></i> Like';
+              }
+            });
+          }
+
+          const commentBtn = post.querySelector(
+            ".post-actions button:nth-child(2)"
+          );
+          if (commentBtn) {
+            commentBtn.addEventListener("click", () => {
+              const commentBox = post.querySelector(".comment-box");
+              if (commentBox) {
+                commentBox.style.display =
+                  commentBox.style.display === "block" ? "none" : "block";
+              }
+            });
+          }
+
+          // Set up toxic comment detection on input focus
+          const commentInput = post.querySelector(".comment-input");
+          if (commentInput) {
+            commentInput.addEventListener("input", function () {
+              if (toxicFilterEnabled) {
+                checkForToxicContent(this);
+              }
+            });
+          }
+        });
+      });
+
+      // Function to detect toxic content
+      function checkForToxicContent(inputElement) {
+        const text = inputElement.value.toLowerCase();
+        const toxicWords = [
+          "stupid",
+          "idiot",
+          "dumb",
+          "loser",
+          "hate",
+          "kill",
+          "die",
+          "ugly",
+          "fat",
+          "racist",
+          "bitch",
+          "shit",
+          "fuck",
+          "ass",
+          "moron",
+          "pathetic",
+          "worthless",
+          "trash",
+          "terrible",
+          "retard",
+          "crap",
+          "damn",
+          "hell",
+          "suck",
+        ];
+
+        // Check for toxic words
+        const isToxic = toxicWords.some(
+          (word) =>
+            text.includes(word) ||
+            // Check for variations with spaces
+            text.includes(" " + word + " ") ||
+            text.includes(" " + word) ||
+            text.includes(word + " ")
+        );
+
+        const warningElement = inputElement
+          .closest("form")
+          .querySelector(".toxic-warning");
+
+        if (isToxic) {
+          inputElement.classList.add("toxic");
+          warningElement.style.display = "block";
+        } else {
+          inputElement.classList.remove("toxic");
+          warningElement.style.display = "none";
+        }
+
+        return isToxic;
+      }
+
+      // Function to handle adding comments
+      function addComment(event, post) {
+        event.preventDefault();
+        const input = post.querySelector(".comment-input");
+        const commentsList = post.querySelector(".comments-list");
+        const warningElement = post.querySelector(".toxic-warning");
+
+        // Check for toxic content if filter is enabled
+        const isToxic = toxicFilterEnabled
+          ? checkForToxicContent(input)
+          : false;
+
+        if (!isToxic && input.value.trim() !== "") {
+          const commentItem = document.createElement("li");
+
+          // Create user badge with initials
+          const badge = document.createElement("span");
+          badge.className = "user-badge";
+          badge.textContent = "U"; // Default user initial
+
+          // Create the comment text
+          const commentText = document.createElement("span");
+          commentText.textContent = input.value;
+
+          // Add badge and text to comment item
+          commentItem.appendChild(badge);
+          commentItem.appendChild(commentText);
+
+          commentsList.appendChild(commentItem);
+          input.value = "";
+          input.classList.remove("toxic");
+          warningElement.style.display = "none";
+        } else if (isToxic) {
+          // Shake the warning to draw attention
+          warningElement.style.animation = "none";
+          setTimeout(() => {
+            warningElement.style.animation = "shake 0.5s";
+          }, 10);
+        }
+      }
+
+      // Add shake animation for toxic comment warnings
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes shake {
+          0% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          50% { transform: translateX(5px); }
+          75% { transform: translateX(-5px); }
+          100% { transform: translateX(0); }
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

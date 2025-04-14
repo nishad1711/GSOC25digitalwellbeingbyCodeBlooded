@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindfulTime - Digital Wellbeing Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #00dbde;
+        --secondary: #fc00ff;
+        --accent: #ff3cac;
+        --dark: #121212;
+        --darker: #0a0a0a;
+        --light: #e0e0e0;
+        --warning: #ff4d4d;
+        --success: #00e676;
+        --glass: rgba(0, 0, 0, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(to right, var(--darker), var(--dark));
+        min-height: 100vh;
+        padding: 2rem;
+        color: var(--light);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle at 20% 30%,
+            rgba(0, 219, 222, 0.1) 0%,
+            transparent 25%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(252, 0, 255, 0.1) 0%,
+            transparent 25%
+          );
+        z-index: -1;
+        animation: pulse 15s ease infinite alternate;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+
+      h1 {
+        font-size: 3rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        letter-spacing: 1px;
+      }
+
+      .subtitle {
+        color: rgba(224, 224, 224, 0.7);
+        font-weight: 300;
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .website-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .website-tab {
+        padding: 1.2rem 1.5rem;
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        min-width: 180px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .website-tab::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s ease;
+      }
+
+      .website-tab:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      }
+
+      .website-tab.active {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(0, 219, 222, 0.3);
+      }
+
+      .website-tab.active::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
+      .website-tab h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+
+      .website-tab .icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+      }
+
+      .tracker-container {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tracker-container::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 219, 222, 0.05) 0%,
+          transparent 70%
+        );
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .time-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .time-card {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .time-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(0, 219, 222, 0.1),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+
+      .time-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+      }
+
+      .time-card:hover::before {
+        transform: translateX(100%);
+      }
+
+      .time-card h3 {
+        font-size: 1rem;
+        color: rgba(224, 224, 224, 0.8);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .time-card .value {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .time-card .unit {
+        font-size: 0.9rem;
+        color: rgba(224, 224, 224, 0.7);
+      }
+
+      .chart-container {
+        position: relative;
+        height: 350px;
+        margin: 3rem 0;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button {
+        padding: 0.8rem 1.8rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(5px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(0, 219, 222, 0.2),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      button:hover::before {
+        transform: translateX(100%);
+      }
+
+      #resetBtn {
+        background: rgba(255, 77, 77, 0.7);
+        color: white;
+      }
+
+      #updateLimitBtn {
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        color: white;
+      }
+
+      .limit-control {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .limit-control label {
+        font-weight: 500;
+        color: rgba(224, 224, 224, 0.9);
+      }
+
+      input {
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.3);
+        font-family: "Poppins", sans-serif;
+        width: 80px;
+        text-align: center;
+        font-weight: 500;
+        color: white;
+        backdrop-filter: blur(5px);
+      }
+
+      input::placeholder {
+        color: rgba(224, 224, 224, 0.6);
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 219, 222, 0.3);
+      }
+
+      .floating-warning {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--warning), #e63946);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(255, 77, 77, 0.4);
+        display: none;
+        z-index: 1000;
+        max-width: 350px;
+        transform: translateY(20px);
+        opacity: 0;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .floating-warning.show {
+        display: block;
+        animation: floatIn 0.6s forwards;
+      }
+
+      @keyframes floatIn {
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .floating-warning h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-size: 1.3rem;
+      }
+
+      .floating-warning p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .close-warning {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.3rem;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .close-warning:hover {
+        opacity: 1;
+      }
+
+      .limit-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+
+      .limit-modal.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal-content {
+        background: linear-gradient(135deg, #121212, #0a0a0a);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 77, 77, 0.3);
+        text-align: center;
+        position: relative;
+        transform: scale(0.9);
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .limit-modal.active .modal-content {
+        transform: scale(1);
+      }
+
+      .modal-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, var(--warning), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .modal-content p {
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .current-time {
+        font-size: 1.2rem;
+        margin: 1rem 0;
+        color: var(--primary);
+      }
+
+      .break-suggestions {
+        margin-top: 1.5rem;
+        text-align: left;
+      }
+
+      .break-suggestions h3 {
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .break-suggestions ul {
+        list-style-type: none;
+      }
+
+      .break-suggestions li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .break-suggestions li::before {
+        content: "•";
+        color: var(--primary);
+      }
+
+      .modal-close {
+        margin-top: 1.5rem;
+        padding: 0.8rem 1.8rem;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .modal-close:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 219, 222, 0.3);
+      }
+
+      @media (max-width: 768px) {
+        .website-tabs {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .time-display {
+          grid-template-columns: 1fr;
+        }
+
+        .floating-warning {
+          max-width: calc(100% - 4rem);
+          left: 2rem;
+          right: auto;
+        }
+
+        h1 {
+          font-size: 2.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>MindfulTime</h1>
+        <p class="subtitle">
+          Track your digital habits and improve your wellbeing
+        </p>
+      </header>
+
+      <div class="website-tabs">
+        <div
+          class="website-tab active"
+          data-website="website1"
+          data-redirect="social_media.html"
+        >
+          <div class="icon">📱</div>
+          <h2>Social Media</h2>
+          <p>Facebook, Instagram, Twitter</p>
+        </div>
+        <div
+          class="website-tab"
+          data-website="website2"
+          data-redirect="chat.html"
+        >
+          <div class="icon">💬</div>
+          <h2>Chat Systems</h2>
+          <p>WhatsApp, Messenger, Discord</p>
+        </div>
+        <div
+          class="website-tab"
+          data-website="website3"
+          data-redirect="ping-pong-gamee 1.html"
+        >
+          <div class="icon">🎮</div>
+          <h2>Entertainment</h2>
+          <p>YouTube, Netflix, Games</p>
+        </div>
+      </div>
+
+      <div class="tracker-container">
+        <div class="time-display">
+          <div class="time-card">
+            <h3>Current Session</h3>
+            <div class="value" id="currentTime">0</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="time-card">
+            <h3>Today's Total</h3>
+            <div class="value" id="totalTime">0</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="time-card">
+            <h3>Weekly Total</h3>
+            <div class="value" id="weeklyTime">0</div>
+            <div class="unit">minutes</div>
+          </div>
+          <div class="time-card">
+            <h3>Your Limit</h3>
+            <div class="value" id="limitDisplay">30</div>
+            <div class="unit">minutes</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="usageChart"></canvas>
+        </div>
+
+        <div class="controls">
+          <button id="resetBtn"><span>🔄</span> Reset Data</button>
+          <div class="limit-control">
+            <label for="timeLimit">Daily Limit:</label>
+            <input
+              type="number"
+              id="timeLimit"
+              value="30"
+              min="1"
+              placeholder="Minutes"
+            />
+          </div>
+          <button id="updateLimitBtn"><span>⏱</span> Update Limit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="floating-warning" id="floatingWarning">
+      <button class="close-warning" id="closeWarning">×</button>
+      <h2><span>⚠</span> Time Alert</h2>
+      <p id="warningMessage">You're approaching your time limit!</p>
+    </div>
+
+    <div class="limit-modal" id="limitModal">
+      <div class="modal-content">
+        <h2>Time Limit Exceeded!</h2>
+        <p>You've reached your maximum allowed time for this category.</p>
+        <div class="current-time" id="modalCurrentTime"></div>
+        <p>Consider taking a break to maintain digital wellbeing.</p>
+
+        <div class="break-suggestions">
+          <h3>Break Suggestions:</h3>
+          <ul>
+            <li>Take a 5-minute walk</li>
+            <li>Do some stretching exercises</li>
+            <li>Drink a glass of water</li>
+            <li>Practice deep breathing</li>
+            <li>Look away from screens for a few minutes</li>
+          </ul>
+        </div>
+
+        <button class="modal-close" id="modalClose">I Understand</button>
+      </div>
+    </div>
+
+    <script>
+      // DOM elements
+      const currentTimeDisplay = document.getElementById("currentTime");
+      const totalTimeDisplay = document.getElementById("totalTime");
+      const weeklyTimeDisplay = document.getElementById("weeklyTime");
+      const limitDisplay = document.getElementById("limitDisplay");
+      const resetBtn = document.getElementById("resetBtn");
+      const timeLimitInput = document.getElementById("timeLimit");
+      const updateLimitBtn = document.getElementById("updateLimitBtn");
+      const floatingWarning = document.getElementById("floatingWarning");
+      const warningMessage = document.getElementById("warningMessage");
+      const closeWarning = document.getElementById("closeWarning");
+      const websiteTabs = document.querySelectorAll(".website-tab");
+      const limitModal = document.getElementById("limitModal");
+      const modalCurrentTime = document.getElementById("modalCurrentTime");
+      const modalClose = document.getElementById("modalClose");
+      const logContainer = document.getElementById("logContainer");
+
+      // Initialize logging system
+      const Logger = {
+        LEVELS: {
+          ERROR: { value: 0, label: "ERROR", color: "#FF5252" },
+          WARN: { value: 1, label: "WARN", color: "#FFD740" },
+          INFO: { value: 2, label: "INFO", color: "#40C4FF" },
+          DEBUG: { value: 3, label: "DEBUG", color: "#69F0AE" },
+        },
+        currentLevel: 2, // Default to INFO level
+
+        setLevel: function (level) {
+          if (this.LEVELS[level]) {
+            this.currentLevel = this.LEVELS[level].value;
+            this.info(`Log level set to ${level}`);
+          }
+        },
+
+        log: function (level, message, data = null) {
+          if (level.value <= this.currentLevel) {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+              timestamp,
+              level: level.label,
+              message,
+              data,
+            };
+
+            // Store in log history (limit to last 100 entries)
+            if (!window.logHistory) window.logHistory = [];
+            window.logHistory.push(logEntry);
+            if (window.logHistory.length > 100) window.logHistory.shift();
+
+            // Log to console with proper formatting
+            const logMessage = data
+              ? `${timestamp} | ${level.label} | ${message} | ${JSON.stringify(
+                  data
+                )}`
+              : `${timestamp} | ${level.label} | ${message}`;
+
+            console.log(`%c${logMessage}`, `color: ${level.color}`);
+
+            // Display in UI log container if it exists
+            if (logContainer) {
+              const logElement = document.createElement("div");
+              logElement.classList.add("log-entry", level.label.toLowerCase());
+              logElement.innerHTML = `
+          <span class="log-time">${new Date(
+            timestamp
+          ).toLocaleTimeString()}</span>
+          <span class="log-level" style="color: ${level.color}">${
+                level.label
+              }</span>
+          <span class="log-message">${message}</span>
+          ${data ? `<span class="log-data">${JSON.stringify(data)}</span>` : ""}
+        `;
+              logContainer.appendChild(logElement);
+              logContainer.scrollTop = logContainer.scrollHeight;
+
+              // Limit displayed logs
+              if (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.children[0]);
+              }
+            }
+          }
+        },
+
+        error: function (message, data = null) {
+          this.log(this.LEVELS.ERROR, message, data);
+        },
+
+        warn: function (message, data = null) {
+          this.log(this.LEVELS.WARN, message, data);
+        },
+
+        info: function (message, data = null) {
+          this.log(this.LEVELS.INFO, message, data);
+        },
+
+        debug: function (message, data = null) {
+          this.log(this.LEVELS.DEBUG, message, data);
+        },
+
+        exportLogs: function () {
+          if (!window.logHistory || window.logHistory.length === 0) {
+            return "No logs available";
+          }
+
+          return JSON.stringify(window.logHistory, null, 2);
+        },
+      };
+
+      // Initialize variables
+      let currentWebsite = "website1";
+      let timeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+      let websitesData = {
+        website1: loadValidatedData("website1Data"),
+        website2: loadValidatedData("website2Data"),
+        website3: loadValidatedData("website3Data"),
+      };
+      let chart;
+      let warningTimeout;
+      let graphUpdateInterval;
+      let sessionData = [];
+      let timeExceeded = false;
+      let openedWindow = null;
+      let isInitialLoad = true;
+
+      // Load and validate data from localStorage
+      function loadValidatedData(key) {
+        try {
+          const data = JSON.parse(localStorage.getItem(key)) || [];
+          const today = new Date();
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(today.getDate() - 7);
+
+          Logger.info(`Loading data for ${key}`, { entriesCount: data.length });
+
+          // Filter out invalid entries and limit duration to reasonable values
+          const validData = data.filter((entry) => {
+            if (!entry || typeof entry !== "object") {
+              Logger.warn(`Invalid entry found in ${key}`, entry);
+              return false;
+            }
+
+            const entryDate = new Date(entry.date);
+            const duration = entry.duration;
+
+            const isValid =
+              !isNaN(entryDate.getTime()) &&
+              entryDate >= oneWeekAgo &&
+              typeof duration === "number" &&
+              duration > 0 &&
+              duration < 24 * 60 * 60 * 1000; // Less than 24 hours
+
+            if (!isValid) {
+              Logger.warn(`Filtered out invalid entry in ${key}`, entry);
+            }
+
+            return isValid;
+          });
+
+          Logger.info(`Validated data for ${key}`, {
+            originalCount: data.length,
+            validCount: validData.length,
+          });
+
+          return validData;
+        } catch (e) {
+          Logger.error(`Error loading data for ${key}`, { error: e.message });
+          return [];
+        }
+      }
+
+      // Initialize the page
+      init();
+
+      function init() {
+        Logger.info("Initializing application");
+
+        // Load saved time limit
+        const savedLimit = localStorage.getItem("timeLimit");
+        if (savedLimit && !isNaN(parseInt(savedLimit))) {
+          const limitValue = parseInt(savedLimit);
+          if (limitValue > 0) {
+            timeLimit = limitValue * 60 * 1000;
+            timeLimitInput.value = limitValue;
+            limitDisplay.textContent = limitValue;
+            Logger.info("Loaded saved time limit", {
+              minutes: limitValue,
+              milliseconds: timeLimit,
+            });
+          }
+        } else {
+          localStorage.setItem(
+            "timeLimit",
+            (timeLimit / (60 * 1000)).toString()
+          );
+          Logger.info("Set default time limit", {
+            minutes: timeLimit / (60 * 1000),
+            milliseconds: timeLimit,
+          });
+        }
+
+        // Clean up stale sessions
+        ["website1", "website2", "website3"].forEach((site) => {
+          checkActiveSession(site);
+        });
+
+        // Initialize chart
+        initChart();
+
+        // Start graph updates
+        startGraphUpdates();
+
+        // Start time display updates
+        updateTimeDisplay();
+        setInterval(() => {
+          updateTimeDisplay();
+          // Only check usage after initial load and a brief delay
+          if (!isInitialLoad) {
+            checkUsage();
+          }
+        }, 1000);
+
+        // Setup event listeners
+        resetBtn.addEventListener("click", resetData);
+        updateLimitBtn.addEventListener("click", updateTimeLimit);
+        closeWarning.addEventListener("click", hideWarning);
+        modalClose.addEventListener("click", () => {
+          limitModal.classList.remove("active");
+          Logger.info("Time limit modal closed, resuming tracking");
+          timeExceeded = false; // Allow tracking to resume
+        });
+
+        // Website tab switching
+        websiteTabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            if (timeExceeded) {
+              Logger.debug("Tab click ignored - time limit exceeded");
+              return;
+            }
+
+            websiteTabs.forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+            const previousWebsite = currentWebsite;
+            currentWebsite = tab.dataset.website;
+
+            Logger.info("Website tab changed", {
+              from: previousWebsite,
+              to: currentWebsite,
+            });
+
+            // Redirect to the appropriate page based on the tab
+            const redirectUrl = tab.dataset.redirect;
+            if (redirectUrl) {
+              // Close previously opened window if it exists
+              if (openedWindow && !openedWindow.closed) {
+                openedWindow.close();
+              }
+
+              // Open new window
+              openedWindow = window.open(redirectUrl, "_blank");
+              Logger.debug("Opened new window", { url: redirectUrl });
+
+              // Focus on the new window if possible
+              if (openedWindow) {
+                openedWindow.focus();
+              }
+            }
+
+            // End previous session if exists
+            endCurrentSession();
+
+            // Start a new session
+            localStorage.setItem(
+              `${currentWebsite}Session`,
+              JSON.stringify({
+                startTime: new Date().toISOString(),
+                active: true,
+              })
+            );
+
+            Logger.info("Started new session", {
+              website: currentWebsite,
+              startTime: new Date().toISOString(),
+            });
+
+            sessionData = [];
+            initChart();
+            updateTimeDisplay();
+
+            // Check usage immediately but only after initial load
+            if (!isInitialLoad) {
+              setTimeout(() => checkUsage(), 1000);
+            }
+
+            // Animate tab change
+            anime({
+              targets: tab,
+              scale: [0.9, 1],
+              duration: 600,
+              easing: "easeOutElastic",
+            });
+          });
+        });
+
+        // Set the first tab as active by default
+        if (websiteTabs.length > 0) {
+          Logger.info("Setting initial active tab");
+          websiteTabs[0].click();
+        }
+
+        // Set isInitialLoad to false after a short delay
+        setTimeout(() => {
+          isInitialLoad = false;
+          Logger.info("Initial load period ended");
+        }, 3000);
+
+        Logger.info("Application initialized successfully");
+      }
+
+      function checkActiveSession(website) {
+        try {
+          const sessionData = localStorage.getItem(`${website}Session`);
+          if (!sessionData) {
+            return;
+          }
+
+          const session = JSON.parse(sessionData);
+          if (session.active && session.startTime) {
+            const sessionStart = new Date(session.startTime);
+            const now = new Date();
+            const duration = now - sessionStart;
+
+            Logger.debug(`Checking session for ${website}`, {
+              startTime: session.startTime,
+              duration: duration,
+            });
+
+            // If session is older than 1 hour, consider it stale
+            if (duration > 60 * 60 * 1000 || isNaN(duration)) {
+              localStorage.removeItem(`${website}Session`);
+              Logger.warn(`Cleared stale session for ${website}`, {
+                startTime: session.startTime,
+                duration: duration,
+              });
+            }
+          } else {
+            localStorage.removeItem(`${website}Session`);
+            Logger.debug(`Removed inactive session for ${website}`);
+          }
+        } catch (e) {
+          Logger.error(`Error checking session for ${website}`, {
+            error: e.message,
+          });
+          localStorage.removeItem(`${website}Session`);
+        }
+      }
+
+      function getCurrentSessionDuration() {
+        try {
+          const sessionData = localStorage.getItem(`${currentWebsite}Session`);
+          if (!sessionData) {
+            return 0;
+          }
+
+          const session = JSON.parse(sessionData);
+          if (session.active && session.startTime) {
+            const startTime = new Date(session.startTime);
+            const now = new Date();
+            const duration = now - startTime;
+
+            if (duration >= 0 && duration < 24 * 60 * 60 * 1000) {
+              Logger.debug("Current session duration", {
+                website: currentWebsite,
+                duration: duration,
+                startTime: session.startTime,
+              });
+              return duration;
+            } else if (duration < 0 || isNaN(duration)) {
+              Logger.warn("Invalid session duration detected", {
+                website: currentWebsite,
+                startTime: session.startTime,
+                duration: duration,
+              });
+            }
+          }
+        } catch (e) {
+          Logger.error("Error getting session duration", {
+            website: currentWebsite,
+            error: e.message,
+          });
+        }
+        return 0;
+      }
+
+      function startGraphUpdates() {
+        if (graphUpdateInterval) {
+          clearInterval(graphUpdateInterval);
+        }
+
+        Logger.debug("Starting graph updates");
+        graphUpdateInterval = setInterval(() => {
+          const now = new Date();
+          const currentDuration = getCurrentSessionDuration();
+
+          sessionData.push({
+            time: now.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            duration: currentDuration / 1000,
+          });
+
+          if (sessionData.length > 20) {
+            sessionData.shift();
+          }
+
+          updateChart();
+        }, 5000);
+      }
+
+      function updateTimeDisplay() {
+        if (timeExceeded) {
+          Logger.debug("Time display update skipped - time limit exceeded");
+          return;
+        }
+
+        const currentDuration = getCurrentSessionDuration();
+        currentTimeDisplay.textContent = Math.floor(currentDuration / 1000);
+
+        const today = new Date().toLocaleDateString();
+        const todayUsage = websitesData[currentWebsite]
+          .filter(
+            (entry) => new Date(entry.date).toLocaleDateString() === today
+          )
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        const totalToday = todayUsage + currentDuration;
+        totalTimeDisplay.textContent = Math.floor(totalToday / 1000);
+
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const weeklyUsage = websitesData[currentWebsite]
+          .filter((entry) => new Date(entry.date) >= oneWeekAgo)
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        weeklyTimeDisplay.textContent = Math.floor(weeklyUsage / (60 * 1000));
+
+        Logger.debug("Updated time display", {
+          currentDuration: Math.floor(currentDuration / 1000),
+          totalToday: Math.floor(totalToday / 1000),
+          weeklyMinutes: Math.floor(weeklyUsage / (60 * 1000)),
+          timeLimit: timeLimit / 1000,
+        });
+      }
+
+      function checkUsage() {
+        if (timeExceeded || isInitialLoad) {
+          Logger.debug("Usage check skipped", {
+            timeExceeded,
+            isInitialLoad,
+          });
+          return;
+        }
+
+        const today = new Date().toLocaleDateString();
+        const todayUsage = websitesData[currentWebsite]
+          .filter(
+            (entry) => new Date(entry.date).toLocaleDateString() === today
+          )
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        const currentDuration = getCurrentSessionDuration();
+        const totalToday = todayUsage + currentDuration;
+
+        Logger.info("Checking usage against limit", {
+          website: currentWebsite,
+          todayUsage: todayUsage,
+          currentDuration: currentDuration,
+          totalToday: totalToday,
+          timeLimit: timeLimit,
+          percentage: ((totalToday / timeLimit) * 100).toFixed(1) + "%",
+        });
+
+        // If 90% of limit is reached, show warning
+        if (totalToday >= timeLimit * 0.9 && totalToday < timeLimit) {
+          const secondsLeft = Math.floor((timeLimit - totalToday) / 1000);
+          showWarning(
+            `You're approaching your time limit! (${secondsLeft} seconds left)`
+          );
+          Logger.warn("Time limit warning shown", { secondsLeft });
+        }
+
+        // If limit is reached, show limit modal
+        if (totalToday >= timeLimit && !timeExceeded) {
+          Logger.warn("Time limit exceeded", {
+            totalToday: totalToday,
+            timeLimit: timeLimit,
+          });
+
+          timeExceeded = true;
+
+          // Save current session before closing
+          endCurrentSession();
+
+          modalCurrentTime.textContent = `Current usage: ${Math.floor(
+            totalToday / 60000
+          )} minutes`;
+          limitModal.classList.add("active");
+
+          // Animation for modal
+          anime({
+            targets: ".modal-content",
+            scale: [0.8, 1],
+            opacity: [0, 1],
+            duration: 800,
+            easing: "easeOutElastic",
+          });
+        }
+      }
+
+      function endCurrentSession() {
+        try {
+          const sessionData = localStorage.getItem(`${currentWebsite}Session`);
+          if (!sessionData) {
+            return;
+          }
+
+          const session = JSON.parse(sessionData);
+          if (session.active && session.startTime) {
+            const sessionStart = new Date(session.startTime);
+            const now = new Date();
+            const duration = now - sessionStart;
+
+            if (duration > 0 && duration < 24 * 60 * 60 * 1000) {
+              // Add to website data
+              websitesData[currentWebsite].push({
+                date: now.toISOString(),
+                duration: duration,
+              });
+
+              // Save to localStorage
+              localStorage.setItem(
+                `${currentWebsite}Data`,
+                JSON.stringify(websitesData[currentWebsite])
+              );
+
+              Logger.info("Session ended and saved", {
+                website: currentWebsite,
+                startTime: session.startTime,
+                duration: duration,
+                totalSessions: websitesData[currentWebsite].length,
+              });
+            } else {
+              Logger.warn("Session not saved - invalid duration", {
+                duration: duration,
+              });
+            }
+          }
+
+          // Clear session
+          localStorage.removeItem(`${currentWebsite}Session`);
+        } catch (e) {
+          Logger.error("Error ending session", { error: e.message });
+        }
+      }
+
+      function showWarning(message) {
+        if (floatingWarning.classList.contains("show")) {
+          return;
+        }
+
+        warningMessage.textContent = message;
+        floatingWarning.classList.add("show");
+        Logger.info("Warning displayed", { message });
+
+        // Animation for warning
+        anime({
+          targets: "#floatingWarning",
+          translateY: [20, 0],
+          opacity: [0, 1],
+          duration: 600,
+          easing: "easeOutQuad",
+        });
+
+        // Auto hide after 5 seconds
+        clearTimeout(warningTimeout);
+        warningTimeout = setTimeout(hideWarning, 5000);
+      }
+
+      function hideWarning() {
+        anime({
+          targets: "#floatingWarning",
+          translateY: [0, 20],
+          opacity: [1, 0],
+          duration: 600,
+          easing: "easeInQuad",
+          complete: function () {
+            floatingWarning.classList.remove("show");
+            Logger.debug("Warning hidden");
+          },
+        });
+      }
+
+      function resetData() {
+        // Confirm reset
+        if (
+          confirm(
+            "Are you sure you want to reset all data? This cannot be undone."
+          )
+        ) {
+          Logger.info("Resetting data for website", {
+            website: currentWebsite,
+          });
+
+          // End current session
+          endCurrentSession();
+
+          // Clear data
+          websitesData[currentWebsite] = [];
+          localStorage.setItem(`${currentWebsite}Data`, JSON.stringify([]));
+
+          // Start new session
+          localStorage.setItem(
+            `${currentWebsite}Session`,
+            JSON.stringify({
+              startTime: new Date().toISOString(),
+              active: true,
+            })
+          );
+
+          // Reset session data
+          sessionData = [];
+
+          // Update displays
+          updateTimeDisplay();
+          updateChart();
+
+          // Animation effect
+          anime({
+            targets: ".time-card .value",
+            scale: [0.5, 1],
+            opacity: [0.5, 1],
+            duration: 800,
+            easing: "easeOutElastic",
+          });
+
+          Logger.info("Data reset complete");
+        }
+      }
+
+      function updateTimeLimit() {
+        const newLimit = parseInt(timeLimitInput.value);
+        if (newLimit && newLimit > 0) {
+          const oldLimit = timeLimit / (60 * 1000);
+          timeLimit = newLimit * 60 * 1000; // Convert to milliseconds
+          localStorage.setItem("timeLimit", newLimit.toString());
+          limitDisplay.textContent = newLimit;
+
+          Logger.info("Time limit updated", {
+            oldLimitMinutes: oldLimit,
+            newLimitMinutes: newLimit,
+            newLimitMs: timeLimit,
+          });
+
+          // Animation effect
+          anime({
+            targets: "#limitDisplay",
+            scale: [0.8, 1.2, 1],
+            color: ["#00E676", "#00DBDE"],
+            duration: 1000,
+            easing: "easeOutElastic",
+          });
+
+          // Reset timeExceeded flag if new limit is higher than previous one
+          if (timeExceeded) {
+            timeExceeded = false;
+            Logger.info("Time exceeded flag reset due to limit increase");
+          }
+
+          // Check if new limit has been exceeded, but only if not on initial load
+          if (!isInitialLoad) {
+            setTimeout(() => checkUsage(), 1000);
+          }
+        } else {
+          Logger.warn("Invalid time limit entered", {
+            value: timeLimitInput.value,
+          });
+          alert("Please enter a valid time limit (greater than 0).");
+        }
+      }
+
+      function initChart() {
+        const ctx = document.getElementById("usageChart").getContext("2d");
+
+        if (chart) {
+          chart.destroy();
+        }
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, "rgba(0, 219, 222, 0.8)");
+        gradient.addColorStop(1, "rgba(252, 0, 255, 0.2)");
+
+        chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Session Duration (seconds)",
+                data: [],
+                borderColor: "rgba(0, 219, 222, 1)",
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointBackgroundColor: "rgba(0, 219, 222, 1)",
+                pointBorderColor: "#fff",
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+              duration: 1000,
+              easing: "easeOutQuart",
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+              },
+              x: {
+                grid: { color: "rgba(255, 255, 255, 0.1)" },
+                ticks: {
+                  color: "rgba(255, 255, 255, 0.7)",
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "rgba(255, 255, 255, 0.7)",
+                  font: {
+                    family: "'Poppins', sans-serif",
+                  },
+                },
+              },
+              tooltip: {
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                titleFont: {
+                  family: "'Poppins', sans-serif",
+                },
+                bodyFont: {
+                  family: "'Poppins', sans-serif",
+                },
+                callbacks: {
+                  label: function (context) {
+                    return ` ${context.dataset.label}: ${context.raw} sec`;
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        Logger.debug("Chart initialized");
+      }
+
+      function updateChart() {
+        if (!chart) return;
+
+        chart.data.labels = sessionData.map((entry) => entry.time);
+        chart.data.datasets[0].data = sessionData.map(
+          (entry) => entry.duration
+        );
+        chart.update();
+
+        Logger.debug("Chart updated", { dataPoints: sessionData.length });
+      }
+
+      // Handle page visibility changes
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          // Page is hidden, pause tracking
+          Logger.info("Page hidden, pausing tracking");
+          if (graphUpdateInterval) {
+            clearInterval(graphUpdateInterval);
+            graphUpdateInterval = null;
+          }
+        } else {
+          // Page is visible again, resume tracking
+          Logger.info("Page visible, resuming tracking");
+          if (!graphUpdateInterval) {
+            startGraphUpdates();
+          }
+        }
+      });
+
+      // Handle beforeunload to save session
+      window.addEventListener("beforeunload", function () {
+        Logger.info("Page unloading, saving session");
+        endCurrentSession();
+      });
+
+      // Add Debug UI if needed (can be toggled)
+      function addDebugUI() {
+        if (document.getElementById("debugPanel")) return;
+
+        const debugPanel = document.createElement("div");
+        debugPanel.id = "debugPanel";
+        debugPanel.style.cssText = `
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: 300px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    border: 1px solid #444;
+    border-radius: 5px 0 0 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+  `;
+
+        const debugHeader = document.createElement("div");
+        debugHeader.style.cssText = `
+    padding: 5px;
+    background: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `;
+
+        const debugTitle = document.createElement("span");
+        debugTitle.textContent = "Debug Console";
+
+        const closeButton = document.createElement("button");
+        closeButton.textContent = "Close";
+        closeButton.onclick = () => debugPanel.remove();
+
+        const exportButton = document.createElement("button");
+        exportButton.textContent = "Export Logs";
+        exportButton.onclick = () => {
+          const logData = Logger.exportLogs();
+          const blob = new Blob([logData], { type: "application/json" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "time-tracker-logs.json";
+          link.click();
+        };
+
+        const clearButton = document.createElement("button");
+        clearButton.textContent = "Clear";
+        clearButton.onclick = () => {
+          logContainer.innerHTML = "";
+          window.logHistory = [];
+        };
+
+        const levelSelect = document.createElement("select");
+        Object.keys(Logger.LEVELS).forEach((level) => {
+          const option = document.createElement("option");
+          option.value = level;
+          option.textContent = level;
+          if (Logger.LEVELS[level].value === Logger.currentLevel) {
+            option.selected = true;
+          }
+          levelSelect.appendChild(option);
+        });
+        levelSelect.onchange = (e) => Logger.setLevel(e.target.value);
+
+        debugHeader.appendChild(debugTitle);
+        debugHeader.appendChild(levelSelect);
+        debugHeader.appendChild(clearButton);
+        debugHeader.appendChild(exportButton);
+        debugHeader.appendChild(closeButton);
+
+        const logView = document.createElement("div");
+        logView.id = "logContainer";
+        logView.style.cssText = `
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 12px;
+  `;
+
+        debugPanel.appendChild(debugHeader);
+        debugPanel.appendChild(logView);
+        document.body.appendChild(debugPanel);
+
+        // Add styles for log entries
+        const style = document.createElement("style");
+        style.textContent = `
+    .log-entry {
+      margin-bottom: 3px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 3px;
+    }
+    .log-time {
+      color: #aaa;
+      margin-right: 5px;
+    }
+    .log-level {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .log-message {
+      color: #fff;
+    }
+    .log-data {
+      display: block;
+      color: #aaa;
+      font-style: italic;
+      margin-left: 10px;
+    }
+    .error .log-message {
+      color: #FF5252;
+    }
+    .warn .log-message {
+      color: #FFD740;
+    }
+    .debug .log-message {
+      color: #69F0AE;
+    }
+  `;
+        document.head.appendChild(style);
+
+        return logView;
+      }
+
+      // Initialize with animation
+      anime({
+        targets: ".website-tab, .time-card, .controls button",
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: anime.stagger(100),
+        duration: 800,
+        easing: "easeOutQuad",
+      });
+
+      anime({
+        targets: ".tracker-container",
+        opacity: [0, 1],
+        scale: [0.95, 1],
+        duration: 1000,
+        easing: "easeOutElastic",
+      });
+
+      // Add debug panel button (optional)
+      const debugButton = document.createElement("button");
+      debugButton.textContent = "Debug Console";
+      debugButton.style.cssText = `
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 9998;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+`;
+      debugButton.onclick = () => {
+        if (!document.getElementById("debugPanel")) {
+          logContainer = addDebugUI();
+        }
+      };
+      document.body.appendChild(debugButton);
+
+      // Initialize logging
+      Logger.info("Time tracker application loaded");
+    </script>
+  </body>
+</html>
