@@ -1,5 +1,6 @@
-# 🌐 Digital Wellbeing  
-*A GSoC '25 Project by Team CodeBlooded*
+# 🌐 Digital Wellbeing
+
+_A GSoC '25 Project by Team CodeBlooded_
 
 > Empowering mindful tech use through interactive analytics and real-time wellbeing tracking.
 
@@ -15,21 +16,21 @@ Whether you're a student, professional, or digital native—this tool helps you 
 
 ## ✨ Key Features
 
-- 🔐 **Secure Login System** – Personalized experience with account-based tracking  
-- 📊 **Interactive Dashboard** – Visualize your screen time and usage trends  
-- ⏱️ **App Usage Tracker** – Identify your most-used apps and habits  
-- 🔔 **Custom Alerts** – Set thresholds to receive digital wellbeing reminders  
+- 🔐 **Secure Login System** – Personalized experience with account-based tracking
+- 📊 **Interactive Dashboard** – Visualize your screen time and usage trends
+- ⏱️ **App Usage Tracker** – Identify your most-used apps and habits
+- 🔔 **Custom Alerts** – Set thresholds to receive digital wellbeing reminders
 - 📱 **Mobile-Friendly Design** – Seamless experience across all devices
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Frontend     | Backend (Future Scope) | Deployment      |
-|--------------|------------------------|-----------------|
-| HTML         | Node.js (planned)      | GitHub Pages    |
-| CSS          | Express.js (planned)   |                 |
-| JavaScript   | MongoDB (planned)      |                 |
+| Frontend   | Backend (Future Scope) | Deployment   |
+| ---------- | ---------------------- | ------------ |
+| HTML       | Node.js (planned)      | GitHub Pages |
+| CSS        | Express.js (planned)   |              |
+| JavaScript | MongoDB (planned)      |              |
 
 ---
 
@@ -48,7 +49,7 @@ cd GSOC25digitalwellbeingbyCodeBlooded
 open login.html
 ```
 
-> ℹ️ *For full backend features, future updates will include server integration and database support.*
+> ℹ️ _For full backend features, future updates will include server integration and database support._
 
 ---
 
@@ -60,14 +61,14 @@ open login.html
 
 ## 👨‍💻 Contributors
 
-| Name                | ID            | Role             |
-|---------------------|---------------|------------------|
-| **Akshat Kumar Singh** | 24BSA10101   | Team Leader      |
-| Nishad Mehta        | 24BCE11266    | Developer        |
-| Roopam Singh        | 24BCE10031    | UI/UX Designer   |
-| Anmol Tiwari        | 24BCE11059    | Developer        |
-| Sumat Duwariya      | 24BCE11266    | Research & Docs  |
-| Atharva Katare      | 24BCE10699    | QA & Testing     |
+| Name                   | ID         | Role            |
+| ---------------------- | ---------- | --------------- |
+| **Akshat Kumar Singh** | 24BSA10101 | Team Leader     |
+| Nishad Mehta           | 24BCE11266 | Developer       |
+| Roopam Singh           | 24BCE10031 | UI/UX Designer  |
+| Anmol Tiwari           | 24BCE11059 | Developer       |
+| Sumat Duwariya         | 24BCE11266 | Research & Docs |
+| Atharva Katare         | 24BCE10699 | QA & Testing    |
 
 ---
 
@@ -75,7 +76,7 @@ open login.html
 
 > ✅ Please ensure the following topics are added to the GitHub repository:
 
-- `Summer of CodeFest '25`  
+- `Summer of CodeFest '25`
 - `GSoC Innovators Club`
 
 ---
@@ -89,3 +90,7 @@ This project is licensed under the **MIT License** – feel free to use, share, 
 ## 🙌 Acknowledgements
 
 Special thanks to the **GSoC Innovators Club** and the **CodeFest '25 Organizers** for this opportunity to learn, collaborate, and innovate.
+
+## given link of PPT
+
+https://docs.google.com/presentation/d/12VKnvC3aL6c0o3qhATdAOzlGJjeyWNaz/edit?usp=drive_link&ouid=103532843027009185481&rtpof=true&sd=true
