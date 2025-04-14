@@ -9,7 +9,9 @@ _A GSoC '25 Project by Team CodeBlooded_
 ## 📌 Overview
 
 #SummerofCodeFest'25'
+
 #GSoCInnovatorsClub
+
 **Digital Wellbeing** is a web-based solution focused on promoting healthier digital habits. Developed as part of the **Summer of CodeFest '25** and **GSoC Innovators Club**, this project offers a user-friendly platform to monitor screen time, track app usage, and build awareness of daily tech interactions.
 
 Whether you're a student, professional, or digital native—this tool helps you take back control of your online time.
@@ -58,6 +60,8 @@ open login.html
 ## 🌐 Live Demo
 
 🔗 [Access the live site here](https://nishad1711.github.io/GSOC25digitalwellbeingbyCodeBlooded/login.html)
+
+## Note:- to use our application register first with your email and new password, or either login with our credentials ,log in id = gsocvit@gmail.com and passwd =123456 .
 
 ---
 
