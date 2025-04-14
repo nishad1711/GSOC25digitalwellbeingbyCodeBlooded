@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChronoGuard - Advanced Time Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --secondary: #a29bfe;
+        --accent: #fd79a8;
+        --dark: #2d3436;
+        --light: #f8f9fa;
+        --warning: #ff4757;
+        --success: #00b894;
+        --glass: rgba(255, 255, 255, 0.25);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(-45deg, #2d3436, #6c5ce7, #fd79a8, #00b894);
+        background-size: 400% 400%;
+        min-height: 100vh;
+        padding: 2rem;
+        color: white;
+        animation: gradientBG 15s ease infinite;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        background: var(--glass);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, white, #fdcb6e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 300;
+        font-size: 1.1rem;
+      }
+
+      /* Website Tabs */
+      .website-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .website-tab {
+        padding: 1.2rem 1.5rem;
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        min-width: 180px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .website-tab::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s ease;
+      }
+
+      .website-tab:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+      }
+
+      .website-tab.active {
+        background: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .website-tab.active::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
+      .website-tab h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+
+      .website-tab .icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+      }
+
+      /* Tracker Container */
+      .tracker-container {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tracker-container::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Time Cards */
+      .time-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .time-card {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .time-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+
+      .time-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+      }
+
+      .time-card:hover::before {
+        transform: translateX(100%);
+      }
+
+      .time-card h3 {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .time-card .value {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        background: linear-gradient(90deg, white, #fdcb6e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .time-card .unit {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Chart */
+      .chart-container {
+        position: relative;
+        height: 350px;
+        margin: 3rem 0;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      /* Controls */
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button {
+        padding: 0.8rem 1.8rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(5px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      button:hover::before {
+        transform: translateX(100%);
+      }
+
+      #resetBtn {
+        background: rgba(255, 71, 87, 0.7);
+        color: white;
+      }
+
+      #updateLimitBtn {
+        background: rgba(108, 92, 231, 0.7);
+        color: white;
+      }
+
+      .limit-control {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .limit-control label {
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      input {
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.2);
+        font-family: "Poppins", sans-serif;
+        width: 80px;
+        text-align: center;
+        font-weight: 500;
+        color: white;
+        backdrop-filter: blur(5px);
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      input:focus {
+        outline: none;
+        border-color: white;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+      }
+
+      /* Floating Warning */
+      .floating-warning {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, var(--warning), #e84393);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(255, 71, 87, 0.4);
+        display: none;
+        z-index: 1000;
+        max-width: 350px;
+        transform: translateY(20px);
+        opacity: 0;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .floating-warning.show {
+        display: block;
+        animation: floatIn 0.6s forwards;
+      }
+
+      @keyframes floatIn {
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .floating-warning h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-size: 1.3rem;
+      }
+
+      .floating-warning p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .close-warning {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.3rem;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .close-warning:hover {
+        opacity: 1;
+      }
+
+      /* Time Blocks Visualization */
+      .time-blocks {
+        display: flex;
+        gap: 5px;
+        margin-top: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .time-block {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .time-block.filled {
+        background: var(--accent);
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(253, 121, 168, 0.5);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .website-tabs {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .time-display {
+          grid-template-columns: 1fr;
+        }
+
+        .floating-warning {
+          max-width: calc(100% - 4rem);
+          left: 2rem;
+          right: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>ChronoGuard</h1>
+        <p class="subtitle">Track. Analyze. Optimize your digital time</p>
+      </header>
+
+      <div class="website-tabs">
+        <div class="website-tab active" data-website="website1">
+          <div class="icon">📱</div>
+          <h2>Social Media</h2>
+          <p>Facebook, Instagram, Twitter</p>
+        </div>
+        <div class="website-tab" data-website="website2">
+          <div class="icon">📰</div>
+          <h2>Messaging Apps</h2>
+          <p>WhatsApp, Telegram</p>
+        </div>
+        <div class="website-tab" data-website="website3">
+          <div class="icon">🎮</div>
+          <h2>Entertainment</h2>
+          <p>YouTube, Netflix, Games</p>
+        </div>
+      </div>
+
+      <div class="tracker-container">
+        <div class="time-display">
+          <div class="time-card">
+            <h3>Current Session</h3>
+            <div class="value" id="currentTime">0</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="time-card">
+            <h3>Today's Total</h3>
+            <div class="value" id="totalTime">0</div>
+            <div class="unit">seconds</div>
+          </div>
+          <div class="time-card">
+            <h3>Weekly Total</h3>
+            <div class="value" id="weeklyTime">0</div>
+            <div class="unit">minutes</div>
+          </div>
+          <div class="time-card">
+            <h3>Your Limit</h3>
+            <div class="value" id="limitDisplay">30</div>
+            <div class="unit">minutes</div>
+          </div>
+        </div>
+
+        <div class="time-blocks" id="timeBlocks">
+          <!-- Time blocks will be added dynamically -->
+        </div>
+
+        <div class="chart-container">
+          <canvas id="usageChart"></canvas>
+        </div>
+
+        <div class="controls">
+          <button id="resetBtn"><span>🔄</span> Reset Data</button>
+          <div class="limit-control">
+            <label for="timeLimit">Daily Limit:</label>
+            <input
+              type="number"
+              id="timeLimit"
+              value="30"
+              min="1"
+              placeholder="Minutes"
+            />
+          </div>
+          <button id="updateLimitBtn"><span>⏱️</span> Update Limit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="floating-warning" id="floatingWarning">
+      <button class="close-warning" id="closeWarning">×</button>
+      <h2><span>⚠️</span> Time Alert</h2>
+      <p id="warningMessage">You're approaching your time limit!</p>
+    </div>
+
+    <script>
+      // DOM elements
+      const currentTimeDisplay = document.getElementById("currentTime");
+      const totalTimeDisplay = document.getElementById("totalTime");
+      const weeklyTimeDisplay = document.getElementById("weeklyTime");
+      const limitDisplay = document.getElementById("limitDisplay");
+      const resetBtn = document.getElementById("resetBtn");
+      const timeLimitInput = document.getElementById("timeLimit");
+      const updateLimitBtn = document.getElementById("updateLimitBtn");
+      const floatingWarning = document.getElementById("floatingWarning");
+      const warningMessage = document.getElementById("warningMessage");
+      const closeWarning = document.getElementById("closeWarning");
+      const websiteTabs = document.querySelectorAll(".website-tab");
+      const timeBlocksContainer = document.getElementById("timeBlocks");
+
+      // Initialize variables
+      let currentWebsite = "website1";
+      let startTime = new Date();
+      let timeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds (default)
+      let websitesData = {
+        website1: JSON.parse(localStorage.getItem("website1Data")) || [],
+        website2: JSON.parse(localStorage.getItem("website2Data")) || [],
+        website3: JSON.parse(localStorage.getItem("website3Data")) || [],
+      };
+      let chart;
+      let warningTimeout;
+      let graphUpdateInterval;
+      let sessionData = [];
+      let openedWindow = null; // Track the opened window
+
+      // Create time blocks visualization
+      function createTimeBlocks() {
+        timeBlocksContainer.innerHTML = "";
+        const blocksCount = 20;
+
+        // Calculate filled blocks based on current usage percentage
+        const today = new Date().toLocaleDateString();
+        const todayUsage = websitesData[currentWebsite]
+          .filter(
+            (entry) => new Date(entry.date).toLocaleDateString() === today
+          )
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        const currentDuration = new Date() - startTime;
+        const totalToday = todayUsage + currentDuration;
+        const usagePercentage = Math.min((totalToday / timeLimit) * 100, 100);
+        const filledBlocks = Math.ceil((blocksCount * usagePercentage) / 100);
+
+        for (let i = 0; i < blocksCount; i++) {
+          const block = document.createElement("div");
+          block.className = "time-block";
+          if (i < filledBlocks) {
+            block.classList.add("filled");
+            block.style.transitionDelay = `${i * 0.05}s`;
+          }
+          timeBlocksContainer.appendChild(block);
+        }
+      }
+
+      // Initialize the page
+      init();
+
+      function init() {
+        // Load saved time limit if exists
+        const savedLimit = localStorage.getItem("timeLimit");
+        if (savedLimit) {
+          timeLimit = parseInt(savedLimit);
+          timeLimitInput.value = timeLimit / (60 * 1000);
+          limitDisplay.textContent = timeLimit / (60 * 1000);
+        }
+
+        // Create time blocks
+        createTimeBlocks();
+
+        // Start tracking time
+        updateTimeDisplay();
+        setInterval(updateTimeDisplay, 1000);
+
+        // Initialize chart with empty data
+        initChart();
+
+        // Start graph update interval
+        startGraphUpdates();
+
+        // Setup event listeners
+        resetBtn.addEventListener("click", resetData);
+        updateLimitBtn.addEventListener("click", updateTimeLimit);
+        closeWarning.addEventListener("click", hideWarning);
+
+        // Website tab switching
+        websiteTabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            websiteTabs.forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+            currentWebsite = tab.dataset.website;
+
+            // Close previous window if open
+            if (openedWindow && !openedWindow.closed) {
+              openedWindow.close();
+            }
+
+            // Open the corresponding page
+            let pageUrl;
+            if (currentWebsite === "website1") {
+              pageUrl = "social_media.html";
+            } else if (currentWebsite === "website2") {
+              pageUrl = "chat.html";
+            } else if (currentWebsite === "website3") {
+              pageUrl = "ping-pong-games1.html";
+            }
+
+            if (pageUrl) {
+              openedWindow = window.open(pageUrl, "_blank");
+              // Reset start time when opening a new page
+              startTime = new Date();
+            }
+
+            sessionData = [];
+            initChart();
+            updateTimeDisplay();
+            createTimeBlocks();
+
+            // Animate tab change
+            anime({
+              targets: tab,
+              scale: [0.9, 1],
+              duration: 600,
+              easing: "easeOutElastic",
+            });
+          });
+        });
+
+        // Check for previous warnings
+        checkUsage();
+
+        // Listen for window focus/blur to track active time
+        window.addEventListener("focus", () => {
+          startTime = new Date();
+        });
+
+        window.addEventListener("blur", () => {
+          saveSession();
+        });
+
+        // Check if opened window is closed
+        setInterval(() => {
+          if (openedWindow && openedWindow.closed) {
+            saveSession();
+            openedWindow = null;
+          }
+        }, 1000);
+      }
+
+      function saveSession() {
+        const endTime = new Date();
+        const duration = endTime - startTime;
+
+        if (duration > 1000) {
+          websitesData[currentWebsite].push({
+            date: startTime.toISOString(),
+            duration: duration,
+          });
+
+          localStorage.setItem(
+            `${currentWebsite}Data`,
+            JSON.stringify(websitesData[currentWebsite])
+          );
+        }
+        startTime = new Date(); // Reset start time
+      }
+
+      function startGraphUpdates() {
+        if (graphUpdateInterval) {
+          clearInterval(graphUpdateInterval);
+        }
+
+        graphUpdateInterval = setInterval(() => {
+          const now = new Date();
+          const currentDuration = now - startTime;
+
+          sessionData.push({
+            time: now.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            duration: currentDuration / 1000,
+          });
+
+          if (sessionData.length > 20) {
+            sessionData.shift();
+          }
+
+          updateChart();
+        }, 5000);
+      }
+
+      function updateTimeDisplay() {
+        const now = new Date();
+        const currentDuration = now - startTime;
+        currentTimeDisplay.textContent = Math.floor(currentDuration / 1000);
+
+        const today = new Date().toLocaleDateString();
+        const todayUsage = websitesData[currentWebsite]
+          .filter(
+            (entry) => new Date(entry.date).toLocaleDateString() === today
+          )
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        const totalToday = todayUsage + currentDuration;
+        totalTimeDisplay.textContent = Math.floor(totalToday / 1000);
+
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const weeklyUsage = websitesData[currentWebsite]
+          .filter((entry) => new Date(entry.date) >= oneWeekAgo)
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        weeklyTimeDisplay.textContent = Math.floor(weeklyUsage / (60 * 1000));
+
+        createTimeBlocks();
+        checkUsage(currentDuration, totalToday);
+      }
+
+      function checkUsage(currentDuration = 0, totalToday = 0) {
+        if (totalToday === 0) {
+          const today = new Date().toLocaleDateString();
+          totalToday = websitesData[currentWebsite]
+            .filter(
+              (entry) => new Date(entry.date).toLocaleDateString() === today
+            )
+            .reduce((sum, entry) => sum + entry.duration, currentDuration);
+        }
+
+        const progressPercent = Math.min((totalToday / timeLimit) * 100, 100);
+
+        if (warningTimeout) {
+          clearTimeout(warningTimeout);
+        }
+
+        if (progressPercent >= 100) {
+          const overageMinutes = Math.ceil(
+            (totalToday - timeLimit) / (60 * 1000)
+          );
+          warningMessage.textContent = `You've exceeded your ${getWebsiteName(
+            currentWebsite
+          )} limit by ${overageMinutes} minute(s)! Consider taking a break.`;
+          showWarning();
+        } else if (progressPercent > 80) {
+          const remainingMinutes = Math.ceil(
+            (timeLimit - totalToday) / (60 * 1000)
+          );
+          warningMessage.textContent = `Warning! Only ${remainingMinutes} minute(s) remaining on ${getWebsiteName(
+            currentWebsite
+          )}.`;
+          showWarning();
+        }
+      }
+
+      function showWarning() {
+        floatingWarning.classList.add("show");
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200]);
+        }
+        setTimeout(() => {
+          if (floatingWarning.classList.contains("show")) {
+            hideWarning();
+          }
+        }, 8000);
+      }
+
+      function hideWarning() {
+        floatingWarning.classList.remove("show");
+      }
+
+      function getWebsiteName(websiteId) {
+        switch (websiteId) {
+          case "website1":
+            return "Social Media";
+          case "website2":
+            return "Messaging Apps";
+          case "website3":
+            return "Entertainment";
+          default:
+            return "";
+        }
+      }
+
+      function initChart() {
+        const ctx = document.getElementById("usageChart").getContext("2d");
+
+        if (chart) {
+          chart.destroy();
+        }
+
+        sessionData = [];
+
+        chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Time Spent (seconds)",
+                data: [],
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                borderColor: "white",
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: "#FD79A8",
+                pointBorderColor: "white",
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                backgroundColor: "rgba(45, 52, 54, 0.9)",
+                titleFont: {
+                  family: "Poppins",
+                  size: 14,
+                  weight: "bold",
+                },
+                bodyFont: {
+                  family: "Poppins",
+                  size: 12,
+                },
+                callbacks: {
+                  label: function (context) {
+                    return `${context.parsed.y} seconds`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                  color: "rgba(255, 255, 255, 0.8)",
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  color: "rgba(255, 255, 255, 0.8)",
+                },
+              },
+            },
+            animation: {
+              duration: 1000,
+              easing: "easeOutQuart",
+            },
+          },
+        });
+      }
+
+      function updateChart() {
+        if (chart) {
+          chart.data.labels = sessionData.map((data) => data.time);
+          chart.data.datasets[0].data = sessionData.map(
+            (data) => data.duration
+          );
+          chart.update();
+        }
+      }
+
+      function updateTimeLimit() {
+        const newLimit = parseInt(timeLimitInput.value);
+        if (!isNaN(newLimit) && newLimit > 0) {
+          timeLimit = newLimit * 60 * 1000;
+          localStorage.setItem("timeLimit", timeLimit.toString());
+          limitDisplay.textContent = newLimit;
+
+          anime({
+            targets: "#limitDisplay",
+            scale: [1.3, 1],
+            duration: 600,
+            easing: "easeOutElastic",
+          });
+
+          warningMessage.textContent = `Time limit updated to ${newLimit} minutes`;
+          showWarning();
+
+          checkUsage();
+        }
+      }
+
+      function resetData() {
+        if (
+          confirm(
+            "Are you sure you want to reset all tracking data for all websites?"
+          )
+        ) {
+          localStorage.removeItem("website1Data");
+          localStorage.removeItem("website2Data");
+          localStorage.removeItem("website3Data");
+          localStorage.removeItem("timeLimit");
+          websitesData = {
+            website1: [],
+            website2: [],
+            website3: [],
+          };
+          timeLimit = 30 * 60 * 1000;
+          timeLimitInput.value = 30;
+          limitDisplay.textContent = 30;
+          sessionData = [];
+
+          if (chart) {
+            chart.destroy();
+          }
+          initChart();
+          startTime = new Date();
+          updateTimeDisplay();
+          createTimeBlocks();
+          hideWarning();
+
+          warningMessage.textContent = "All data has been reset";
+          showWarning();
+        }
+      }
+
+      // Save data when page is closed or refreshed
+      window.addEventListener("beforeunload", () => {
+        saveSession();
+
+        const today = new Date().toLocaleDateString();
+        const todayUsage = websitesData[currentWebsite]
+          .filter(
+            (entry) => new Date(entry.date).toLocaleDateString() === today
+          )
+          .reduce((sum, entry) => sum + entry.duration, 0);
+
+        if (todayUsage > timeLimit) {
+          return "You've exceeded your time limit. Are you sure you want to leave?";
+        }
+      });
+    </script>
+  </body>
+</html>
