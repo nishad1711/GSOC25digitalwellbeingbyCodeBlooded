@@ -1,5 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/login",
+      "destination": "/login.html",
+      "permanent": true
+    }
+  ],
   "cleanUrls": true,
-  "rewrites": [{ "source": "/login", "destination": "/login.html" }],
   "trailingSlash": false
 }
