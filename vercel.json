@@ -1,11 +1,6 @@
 {
-  "redirects": [
-    {
-      "source": "/login",
-      "destination": "/login.html",
-      "permanent": true
-    }
-  ],
+  "trailingSlash": false,
   "cleanUrls": true,
-  "trailingSlash": false
+  "framework": null,
+  "buildCommand": null
 }
