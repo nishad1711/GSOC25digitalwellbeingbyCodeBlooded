@@ -1,6 +1,6 @@
 # Vercel LINK----
 
- https://gsoc-25digitalwellbeingby-code-blooded-pz3n-fkvyvyux7.vercel.app/
+ https://gsoc-25digitalwellbeingby-code-blooded.vercel.app/
 
 # 🌐 Digital Wellbeing
 
