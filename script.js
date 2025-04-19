@@ -1,5 +1,3 @@
-// Initialize Firebase (already handled in firebase-config.js)
-
 // Handle login
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
@@ -30,6 +28,12 @@ if (registerForm) {
 
     const email = document.getElementById("register-email").value;
     const password = document.getElementById("register-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
 
     firebase
       .auth()
