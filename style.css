@@ -26,6 +26,7 @@ body {
   display: flex;
   flex-direction: column;
   animation: fadeIn 1s ease-in-out;
+  overflow-x: hidden;
 }
 
 a {
@@ -70,6 +71,7 @@ a:hover {
   background-color: #12142a;
   align-items: center;
   animation: fadeIn 1s ease;
+  flex-wrap: wrap;
 }
 
 .navbar .logo {
@@ -95,6 +97,7 @@ a:hover {
   padding: 60px 10%;
   flex-wrap: wrap;
   gap: 40px;
+  align-items: center;
 }
 
 /* Hero Text */
@@ -147,6 +150,7 @@ a:hover {
   justify-content: space-between;
   margin-bottom: 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -159,6 +163,7 @@ a:hover {
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: var(--transition);
+  text-align: center;
 }
 
 .tab-btn.active {
@@ -212,4 +217,121 @@ button[type="submit"]:hover {
   margin-top: 14px;
   text-align: center;
   color: var(--text-muted);
+}
+
+/* -------------------- Responsive Tweaks -------------------- */
+@media (max-width: 1024px) {
+  .main-container {
+    flex-direction: column;
+    padding: 50px 8%;
+    gap: 50px;
+  }
+
+  .hero {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .hero p {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .navbar .logo {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .navbar nav a {
+    margin: 6px 12px;
+    font-size: 15px;
+  }
+
+  .main-container {
+    padding: 40px 6%;
+  }
+
+  .auth-card {
+    padding: 32px 24px;
+  }
+
+  input {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  button[type="submit"] {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .tabs {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .tab-btn {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  .main-container {
+    padding: 30px 5%;
+    gap: 30px;
+  }
+
+  .auth-card {
+    margin: 0 auto;
+    padding: 24px 18px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .features li {
+    font-size: 13px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  button[type="submit"] {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .tab-btn {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+
+  .link-text {
+    font-size: 13px;
+  }
 }
