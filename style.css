@@ -335,3 +335,52 @@ button[type="submit"]:hover {
     font-size: 13px;
   }
 }
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .navbar nav {
+    margin-top: 10px;
+  }
+
+  .main-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .hero {
+    max-width: 100%;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .features li {
+    font-size: 15px;
+    justify-content: center;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 30px 24px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  button[type="submit"] {
+    font-size: 15px;
+  }
+}
