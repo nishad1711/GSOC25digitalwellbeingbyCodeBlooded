@@ -1,28 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Register</title>
+    <meta charset="UTF-8" />
+    <title>Register | Digital Wellbeing</title>
     <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="logo">
+        <span style="color: #845ef7">DW</span> Digital Wellbeing
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="login.html">Sign In</a>
+        <a href="register.html" class="active">Sign Up</a>
+      </nav>
+    </div>
+
+    <div class="main-container">
+      <div class="hero">
+        <h1>Balance Your Digital Life</h1>
+        <p>
+          Take control of your screen time, build healthier habits, and improve
+          your focus and wellbeing with our comprehensive digital wellness
+          platform.
+        </p>
+        <ul class="features">
+          <li>
+            📊 <b>Personalized Insights:</b> Tailored recommendations for a
+            healthier tech lifestyle.
+          </li>
+          <li>
+            ⏱ <b>Focus Sessions:</b> Customizable focus timers and distraction
+            blockers.
+          </li>
+          <li>
+            🧘‍♂️ <b>Mindfulness Tools:</b> Meditations and breathing exercises to
+            reduce digital stress.
+          </li>
+        </ul>
+      </div>
+
+      <div class="auth-card">
+        <div class="tabs">
+          <a href="login.html" class="tab-btn">Sign In</a>
+          <button class="tab-btn active">Sign Up</button>
+        </div>
+        <form id="register-form" class="form-tab active">
+          <input
+            type="email"
+            id="register-email"
+            placeholder="Enter your email"
+            required
+          />
+          <input
+            type="password"
+            id="register-password"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="submit">Register</button>
+        </form>
+        <div class="link-text">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
+      </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="firebase-config.js"></script>
-  </head>
-  <body>
-    <div class="form-container">
-      <h2>Register</h2>
-      <form id="register-form">
-        <input type="email" id="register-email" placeholder="Email" required />
-        <input
-          type="password"
-          id="register-password"
-          placeholder="Password"
-          required
-        />
-        <button type="submit" id="register-btn">Register</button>
-      </form>
-      <p>Already have an account? <a href="login.html">Login here</a></p>
-    </div>
-
     <script src="script.js"></script>
   </body>
 </html>
